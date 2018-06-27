@@ -1,0 +1,421 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+	<link rel="stylesheet" type="text/css" href="semantic.css">
+	<style>
+
+	body{
+	margin:0px;
+	padding:0px;
+	background:black;
+	}
+	.layoutHeading{
+	position:absolute;
+	width:100%;
+	height:20%;
+	left:30%;
+	top:40%;
+	border:none;
+	font-size:2.3rem;
+	line-height:1.2;
+	color:gray;
+	}
+	#btn{
+	position:absolute;
+	width:100px;
+	height:100px;
+	border-radius:15px;
+	left:45%;
+	top:10%;
+	color:white;
+	background:black;
+	opacity:0.3;
+	visibility:hidden;
+	}
+	</style>
+        <script type="text/javascript" src="three.js"></script>
+        <script type="text/javascript" src="OBJLoader.js"></script>
+		 <script type="text/javascript" src="Concurrent.Thread.js" ></script>  
+		<script src="OrbitControls.js"></script>
+		<script src='myload.js'></script>
+         
+        <script type="text/javascript">
+            var scene = null;
+            var camera = null;
+            var renderer = null;
+            var controls;
+           //var mesh = new Array();
+		   var mesh1=new Array();
+		  var mesh2=new Array();
+		//  var mesh3=new Array();
+		  var stam=new Array();
+		  var stamendisk=new Array();
+           var id = null;
+		 // var id=new Array();
+			 var loader = new THREE.OBJLoader();//在init函数中，创建loader变量，用于导入模型
+			//var a=0.01,a1=-0.01,a3=Math.PI/2;
+			// var b=0.01,b1=-0.01,b3=Math.PI*7/18;
+			var a=new Array();
+			var a1=new Array();
+			var a3=new Array();
+			var b=new Array();
+			var b1=new Array();
+			var b3=new Array();
+			var sym=new Array();
+			var sym1=new Array();
+			var height=new Array();
+			var rox=new Array();
+			var flowernum=0;
+			var m1,m2,st1,st_disk1;
+			var tex=['textures/petal1_4.jpg','textures/petal1_5.jpg','textures/petal3_1.jpg','textures/petal4_2.jpg','textures/petalB_1.jpg','textures/petalB_1.jpg'];
+			var side=[
+			{ 
+			x:0,
+			y:-5,
+			z:0
+			},
+				{ 
+			x:20,
+			y:0,
+			z:0
+			},
+				{ 
+			x:-20,
+			y:0,
+			z:0
+			},	{ 
+			x:-10,
+			y:0,
+			z:-10
+			},	{ 
+			x:10,
+			y:0,
+			z:-10
+			}
+			];
+			
+			
+
+	function MyLoad(){
+		Concurrent.Thread.create(function(){
+			var s=parseInt(Math.random()*5);
+			//alert(s)
+			loader.load('meshes/petal_proto2.obj', function(obj) {//第一个表示模型路径，第二个表示完成导入后的回调函数，一般我们需要在这个回调函数中将导入的模型添加到场景中
+						var texture = THREE.ImageUtils.loadTexture(tex[s]);
+						var mat = new THREE.MeshPhongMaterial();
+						mat.map = texture;//材质的Map属性用于添加纹理
+						mat.side= THREE.DoubleSide;
+
+				   obj.traverse(function(child) {
+                        if (child instanceof THREE.Mesh) {
+                           child.material = mat;
+                        }
+                    });
+					m1=obj;
+					});
+	    loader.load('meshes/petal_proto5.obj', function(obj) {//第一个表示模型路径，第二个表示完成导入后的回调函数，一般我们需要在这个回调函数中将导入的模型添加到场景中
+						var texture = THREE.ImageUtils.loadTexture(tex[s]);
+						var mat = new THREE.MeshPhongMaterial();
+						mat.map = texture;//材质的Map属性用于添加纹理
+						mat.side= THREE.DoubleSide;
+
+				   obj.traverse(function(child) {
+                        if (child instanceof THREE.Mesh) {
+                           child.material = mat;
+                        }
+                    });
+					m2=obj
+				});
+			   
+		loader.load('meshes/stem1.obj', function(obj) {//第一个表示模型路径，第二个表示完成导入后的回调函数，一般我们需要在这个回调函数中将导入的模型添加到场景中
+						var texture = THREE.ImageUtils.loadTexture('textures/green.jpg');
+						var mat = new THREE.MeshPhongMaterial();
+						mat.map = texture;//材质的Map属性用于添加纹理
+						mat.side= THREE.DoubleSide;
+
+				   obj.traverse(function(child) {
+                        if (child instanceof THREE.Mesh) {
+                           child.material = mat;
+                        }
+                    });
+					st1=obj
+				});
+		loader.load('meshes/stamendisk_proto_v1.obj', function(obj) {//第一个表示模型路径，第二个表示完成导入后的回调函数，一般我们需要在这个回调函数中将导入的模型添加到场景中
+						var texture = THREE.ImageUtils.loadTexture(tex[s]);
+						var mat = new THREE.MeshPhongMaterial();
+						mat.map = texture;//材质的Map属性用于添加纹理
+						mat.side= THREE.DoubleSide;
+
+				   obj.traverse(function(child) {
+                        if (child instanceof THREE.Mesh) {
+                           child.material = mat;
+                        }
+                    });
+					st_disk1=obj
+				});
+		});
+		
+		
+				renderer= new THREE.WebGLRenderer();  
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				document.body.appendChild(renderer.domElement);
+		
+                renderer.setClearColor(0xb3f3f9);//(0xf6e8f2);//画布颜色
+                scene = new THREE.Scene();//创建场景
+				//scene.fog = new THREE.FogExp2(0x000000,0.02);
+
+                
+               
+				camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight , 1, 100);
+               // camera.position.set(10,25,50);//相机位置
+			   camera.position.set(-20,5,50);//相机位置
+                camera.lookAt(new THREE.Vector3(0, 0, 0));//lookAt()设置相机所看的位置
+                scene.add(camera);//把相机添加到场景中
+               
+			   	controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+			
+
+				controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+				controls.dampingFactor = 0.25;
+
+				controls.screenSpacePanning = false;
+
+				controls.minDistance = 10;
+				controls.maxDistance = 60;
+
+				controls.maxPolarAngle = Math.PI / 2;
+			   
+			 
+			
+				var light = new THREE.AmbientLight( 0xFFFFFF );
+				scene.add( light );
+			
+		
+			window.addEventListener( 'resize', onWindowResize, false );
+		//	id[flowernum]= setInterval(draw, 30);//每隔20s重绘一次
+	}
+			
+			
+		
+		function myload( url, mesh,i,scale,rotate_y,rotatex,positionx=0,positiony=0,positionz=0){
+				
+				if(url==1){//模型1，
+					mesh[i]=m1.clone();
+					mesh[i].rotation.y=rotate_y;
+					mesh[i].rotateX(rotatex);
+					mesh[i].rotation.x=(Math.PI)*2/3;
+					mesh[i].scale.set(scale, scale, scale);
+					mesh[i].position.x=positionx;
+					mesh[i].position.y=positiony
+					mesh[i].position.z=positionz;
+                    scene.add(mesh[i]);//将导入的模型添加到场景中
+					}
+				if(url==2){//模型2
+					mesh[i]=m2.clone();
+					mesh[i].rotation.y=rotate_y;
+					mesh[i].rotateX(rotatex);
+					mesh[i].rotation.x=(Math.PI)*2/3;
+					mesh[i].scale.set(scale, scale, scale);
+					mesh[i].position.x=positionx;
+					mesh[i].position.y=positiony
+					mesh[i].position.z=positionz;
+                    scene.add(mesh[i]);//将导入的模型添加到场景中
+					}
+			}
+			function myflower(url,mesh1,mesh2,i,textures,scale,positionx,positiony,positionz){
+				
+				mesh1[i]=new Array();
+				mesh2[i]=new Array();
+				rox[i]=0.2;
+				height[i]=positiony;
+				a[i]=0.01;a1[i]=-0.01;a3[i]=Math.PI/2;
+				b[i]=0.01;b1[i]=-0.01;b3[i]=Math.PI*7/18;
+				sym[i]=0;sym1[i]=0
+				for(var i1=0;i1<8;i1++){
+				//	myload( url, mesh1[i],i1,textures,0.01,(i1-1)*Math.PI/4,Math.PI/2,positionx,positiony,positionz);
+					myload( 1, mesh1[i],i1,0.01,(i1-1)*Math.PI/4,Math.PI/2,positionx,positiony,positionz);
+				}
+				for(var i2=0;i2<12;i2++){
+					if(i2%2==0)
+						myload( 2, mesh2[i],i2,0.01,(Math.PI/6)*(i2+1),Math.PI/2,positionx,positiony,positionz);
+					else{
+						myload( 2, mesh2[i],i2,0.01,(Math.PI/6)*(i2+1)-Math.PI/9,Math.PI*88/180,positionx,positiony,positionz);
+						}
+				}
+		
+				  stamendisk[i] =st_disk1.clone();
+				 stamendisk[i].position.x=positionx;
+				 stamendisk[i].position.z=positionz;
+				  stamendisk[i].position.y=positiony+0.5;
+					stamendisk[i].scale.set(.05, .05, .05);
+					stamendisk[i].rotation.x=Math.PI/6;
+				
+		
+				
+					stam[i]=st1.clone();
+					stam[i].rotateZ(Math.PI);
+					stam[i].position.y=positiony-20;
+					stam[i].position.x=positionx;
+					stam[i].position.z=positionz
+				
+			
+                    scene.add(stam[i]);//将导入的模型添加到场景中
+			}
+				
+            function init() {
+		
+				
+			/*	renderer= new THREE.WebGLRenderer();  
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				document.body.appendChild(renderer.domElement);
+		
+                renderer.setClearColor(0x000000);//画布颜色
+                scene = new THREE.Scene();//创建场景
+                
+                //camera = new THREE.OrthographicCamera(-5, 5, 3.75, -3.75, 0.1, 100);//正交投影照相机
+				camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight , 1, 100);
+                camera.position.set(15,25, 75);//相机位置
+                camera.lookAt(new THREE.Vector3(0, 0, 0));//lookAt()设置相机所看的位置
+                scene.add(camera);//把相机添加到场景中
+               
+			   	controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+				//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+
+				controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+				controls.dampingFactor = 0.25;
+
+				controls.screenSpacePanning = false;
+
+				controls.minDistance = 10;
+				controls.maxDistance = 50;
+
+				controls.maxPolarAngle = Math.PI / 2;
+			  */ 
+			   
+		
+		
+			
+				clearInterval(id);
+			//	document.getElementById('div').style.display='none';
+				
+				myflower('meshes/petal_proto2.obj',mesh1,mesh2,flowernum,'textures/petal1_5.jpg',0.01,side[flowernum].x,side[flowernum].y,side[flowernum].z);
+			//	myflower('meshes/petal_proto2.obj',mesh1,mesh2,1,'textures/petal1_5.jpg',0.01,0,0,0);
+			//	myflower('meshes/petal_proto2.obj',mesh1,mesh2,2,'textures/petal1_5.jpg',0.01,-20,0,0);
+				flowernum++;
+				if(flowernum==5){
+					document.getElementById('btn').disabled=true;
+					document.getElementById('btn').style.visibility="hidden";
+				}
+			 
+			
+		
+			
+				/*var light = new THREE.AmbientLight( 0xFFFFFF );
+				scene.add( light );
+			
+				
+			window.addEventListener( 'resize', onWindowResize, false );
+			*/
+        
+				//for(var i=0;i<3;i++){
+					id= setInterval("draw()", 20);//每隔20s重绘一次
+					//}
+            }
+            
+			
+		
+			 
+           function draw() {//们在重绘函数中让茶壶旋转：
+				controls.update(); 
+                renderer.render(scene, camera);//调用WebGLRenderer的render函数刷新场景
+				for(var i=0;i<stam.length;i++){
+					stam[i].position.y+=rox[i];
+					}
+				for(var i=0;i<stam.length;i++){
+					if(stam[i].position.y>=height[i]){
+						rox[i]=0;
+						for(var j=0;j<8;j++){
+							mesh1[i][j].scale.x+=a[i];
+							mesh1[i][j].scale.y+=a[i];
+							mesh1[i][j].scale.z+=a[i];
+						
+							if(mesh1[i][7].scale.x>=1){
+								a[i]=0;
+								sym[i]=1;
+								
+							}
+							mesh1[i][j].rotateX(a1[i]);
+							if(j==7){
+								a3[i]-=0.01;
+							}
+							if(a3[i]<=0){
+								a1[i]=0;
+								scene.add(stamendisk[i]);
+							}
+							
+						}
+						if(sym[i]==1){
+							for(var j=0;j<12;j++){
+								mesh2[i][j].scale.x+=b[i];
+								mesh2[i][j].scale.y+=b[i];
+								mesh2[i][j].scale.z+=b[i];
+								if(mesh2[i][11].scale.x>=1){
+									b[i]=0;
+									
+								}
+								mesh2[i][j].rotateX(b1[i]);
+								if(j==11){
+								b3[i]-=0.01;
+								}
+								if(b3[i]<=0)
+								{
+								b1[i]=0;
+								}
+					
+							}
+						}
+					}
+				}
+		
+		
+		}
+		function first(){
+			document.getElementById('div').style.display='none';
+			//myflower('meshes/petal_proto2.obj',mesh1,mesh2,flowernum,'textures/petal1_5.jpg',0.01,20,0,0);
+			myflower('meshes/petal_proto2.obj',mesh1,mesh2,flowernum,'textures/petal1_5.jpg',0.01,side[flowernum].x,side[flowernum].y,side[flowernum].z);
+			id=setInterval("draw()",20);
+			flowernum++;
+			document.getElementById('btn').style.visibility="visible";
+		
+		}
+	
+		
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+		
+        </script>
+    </head>
+    
+    <body onload="MyLoad()">
+	
+	
+		
+	<div class='layoutHeading'id='div'>
+		Please click <img id='img' src='textures/heart.png' onclick="first()"></img>to create flowers!
+		</div>
+	
+	
+		<button id='btn' onclick="init()" >
+			push
+		</button>
+    </body>
+</html>
