@@ -9,3 +9,6 @@
 使用：
   1 在本地配置tomcat 然后使用tomcat打开。
   2 在浏览器的属性面板的目标一栏上加入以下命令：--allow-file-access-from-files
+
+
+![sprint3_gif](https://github.com/software-case-course/team_2018_1/blob/master/web_screenshot/sprint3-2018.06.24/GitHub%20Visualization.gif)
