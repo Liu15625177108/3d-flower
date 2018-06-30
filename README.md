@@ -11,4 +11,4 @@
   2 在浏览器的属性面板的目标一栏上加入以下命令：--allow-file-access-from-files
 
 
-![flower.gif](https://github.com/Liu15625177108/3d-flower/flower.gif)
+![flower.gif](https://github.com/Liu15625177108/3d-flower/blob/master/flower.gif)
